@@ -16,7 +16,7 @@ export function listenTty(commands: Commands) {
         }
 
         const result = await commands[command].executeAsync({
-            isFlagamax: true,
+            isAdmin: true,
             mute: args[0] ? args[0].toLowerCase() === 'true' : null
         });
         console.log('[TTY]', result);

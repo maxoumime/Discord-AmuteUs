@@ -1,7 +1,7 @@
 import type {Guild} from 'discord.js';
 
 export interface DefaultCommandOptions {
-  isFlagamax: boolean;
+  isAdmin: boolean;
 }
 
 export abstract class Command<Options extends object = {}> {

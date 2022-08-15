@@ -3,7 +3,7 @@ import type {Commands} from '../commands';
 import {isValidCommand} from '../commands';
 import type {Client} from 'discord.js';
 
-const {DISCORD_FLAGAMAX_ID} = process.env;
+const {DISCORD_ADMIN_ID} = process.env;
 
 export function listenDiscord(client: Client, commands: Commands) {
     client.on('interactionCreate', async (interaction) => {
@@ -21,7 +21,7 @@ export function listenDiscord(client: Client, commands: Commands) {
 
         const command = commands[commandName];
         const reply = await command.executeAsync({
-            isFlagamax: interaction.user.id === DISCORD_FLAGAMAX_ID,
+            isAdmin: interaction.user.id === DISCORD_ADMIN_ID,
             mute: interaction.options.getBoolean('status')
         });
         await interaction.reply(reply);

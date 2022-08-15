@@ -35,8 +35,8 @@ export class MuteCommand extends Command<Options> {
   }
 
   async executeAsync(options: DefaultCommandOptions & Options) {
-    if (!options.isFlagamax) {
-      return 'You\'re not allowed to run this command.';
+    if (!options.isAdmin) {
+      return "You're not allowed to run this command.";
     }
 
     const mute = (this.muteAll = options.mute ?? !this.muteAll);

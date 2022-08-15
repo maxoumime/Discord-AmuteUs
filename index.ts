@@ -42,7 +42,7 @@ main()
   .finally(async () => {
     console.log('Un-muting everyone.');
     await globalCommands?.mute?.executeAsync({
-      isFlagamax: true,
+      isAdmin: true,
       mute: false,
     });
     console.log('Disconnecting...');

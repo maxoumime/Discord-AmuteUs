@@ -19,7 +19,7 @@ export const listenHttp = (commands: Commands) => {
     app.post('/command/mute', async (req, res) => {
         const {mute} = req.body;
         const result = await commands.mute.executeAsync({
-            isFlagamax: true,
+            isAdmin: true,
             mute: mute ? mute.toLowerCase() === 'true' : null
         });
         return res.send(result);
