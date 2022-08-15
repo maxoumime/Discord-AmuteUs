@@ -1,75 +1,45 @@
 import 'dotenv/config';
 import {Client, GatewayIntentBits} from "discord.js";
 import type {Commands} from "./commands";
-import {isValidCommand, makeCommands} from "./commands";
-import readline from "readline";
+import {makeCommandsAsync} from "./commands";
+import {listenHttp} from "./handlers/http";
+import {listenTty} from "./handlers/tty";
+import {listenDiscord} from "./handlers/discord";
 
-const {DISCORD_GUILD_ID, DISCORD_TOKEN, DISCORD_FLAGAMAX_ID} = process.env;
+const {DISCORD_TOKEN} = process.env;
 
+let client: Client | undefined;
 let globalCommands: Commands | undefined;
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-});
-
 const main = async () => {
-    const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates]});
-
-    client.once('ready', () => {
-        console.log('Ready!');
-    });
+    client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates]});
 
     await client.login(DISCORD_TOKEN);
 
-    const guild = await client.guilds.fetch(DISCORD_GUILD_ID!);
+    const commands = globalCommands = await makeCommandsAsync(client);
 
-    const commands = makeCommands(client, guild);
-    globalCommands = commands;
+    listenDiscord(client, commands);
+    listenTty(commands);
+    listenHttp(commands);
 
-    client.on('interactionCreate', async (interaction) => {
-        if (!interaction.isChatInputCommand()) {
-            return;
-        }
-
-        console.log(interaction.toString());
-        const {commandName} = interaction;
-
-        if (!isValidCommand(commandName)) {
-            await interaction.reply(`Unknown command: ${commandName}`);
-            return;
-        }
-
-        const command = commands[commandName];
-        const reply = await command.executeAsync({
-            isFlagamax: interaction.user.id === DISCORD_FLAGAMAX_ID,
-            mute: interaction.options.getBoolean('status')
-        });
-        await interaction.reply(reply);
-    });
-
-    rl.on('line', async (line) => {
-        const [command, ...args] = line.trim().replace(/ {2,+}/, ' ').split(' ');
-        if (!isValidCommand(command)) {
-            return;
-        }
-
-        const result = await commands[command].executeAsync({
-            isFlagamax: true,
-            mute: args[0] ? args[0].toLowerCase() === 'true' : null
-        });
-        console.log(result);
+    await new Promise<void>(resolve => {
+        return process.once('SIGINT', resolve);
     });
 };
 
+let exitCode = 0;
 main()
     .catch(async (err) => {
+        console.log(err);
+        exitCode = 1;
+    })
+    .finally(async () => {
         console.log('Un-muting everyone.');
         await globalCommands?.mute?.executeAsync({
             isFlagamax: true,
             mute: false
         });
-        console.log(err);
-        process.exit(1);
-    });
+        console.log('Disconnecting...')
+        client?.destroy();
+        process.exit(exitCode)
+    })
