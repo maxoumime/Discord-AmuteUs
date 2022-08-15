@@ -47,9 +47,13 @@ Run `yarn install`.
 
 ## Install on your server
 
-Prepare and run the following link.
+1. Prepare and run the following link.
 
 `https://discord.com/api/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`
+
+2. Add the bot's commands to your server.
+
+`yarn run interactions:deploy`
 
 ## Run the app
 
