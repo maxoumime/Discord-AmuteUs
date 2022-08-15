@@ -1,5 +1,6 @@
-import {Commands, isValidCommand} from "../commands";
-import readline from "readline";
+import type {Commands} from '../commands';
+import {isValidCommand} from '../commands';
+import readline from 'readline';
 
 const rl = readline.createInterface({
     input: process.stdin,

@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import express from 'express'
-import {Commands} from "../commands";
+import express from 'express';
+import type {Commands} from '../commands';
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 export const listenHttp = (commands: Commands) => {
     app.use((req, res, next) => {

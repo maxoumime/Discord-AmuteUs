@@ -1,6 +1,7 @@
 import 'dotenv/config';
-import {Commands, isValidCommand} from "../commands";
-import {Client} from "discord.js";
+import type {Commands} from '../commands';
+import {isValidCommand} from '../commands';
+import type {Client} from 'discord.js';
 
 const {DISCORD_FLAGAMAX_ID} = process.env;
 
